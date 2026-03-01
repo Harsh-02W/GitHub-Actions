@@ -1,18 +1,48 @@
-#Workflow name
+# This is workflow name
+
 name: Hello
 
-#trigger point
+# runs on a trigger
+
 on:
-  push:
-    branch: [main]branches: 
 
-#jobs in workflow
-job:
+push:
 
-  #this is name of jobs
-  greet:
-    #this is github runner, each job runs on selerate runner
-    runs-on: ubuntu-latest
-    steps:
-      - name: say Hello to users
-        run: echo 'Hello $USER'
+branches: [main]
+
+# these are jobs inside the workflow
+
+jobs:
+
+# this is the name of job 1
+
+greet:
+
+# this is github runner, each job runs on a runner
+
+runs-on: ubuntu-latest
+
+steps:
+
+- name: say hello to users
+
+run: echo "Hello Dosto"
+
+- name: say hello to username
+
+run: echo "Hello $USER"
+
+# this is the name of job 2
+
+show-version:
+
+runs-on: ubuntu-latest
+
+steps:
+
+- name: version of python, docker, etc
+
+run: docker --version && python --version
+
+
+
