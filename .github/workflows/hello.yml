@@ -1,0 +1,18 @@
+#Workflow name
+name: Hello
+
+#trigger point
+on:
+  push:
+    branch: [main]branches: 
+
+#jobs in workflow
+job:
+
+  #this is name of jobs
+  greet:
+    #this is github runner, each job runs on selerate runner
+    runs-on: ubuntu-latest
+    steps:
+      - name: say Hello to users
+        run: echo 'Hello $USER'
