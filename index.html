@@ -1,1 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mukul — DevOps Engineer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
+    :root {
+      --navy: #040d1f;
+      --navy2: #071428;
+      --navy3: #0a1c38;
+      --gold: #c9a84c;
+      --gold2: #e2c47a;
+      --gold3: #f5e0a0;
+      --glass: rgba(255,255,255,0.035);
+      --glass-border: rgba(201,168,76,0.18);
+      --glass-hover: rgba(255,255,255,0.07);
+      --text: #e8e0cc;
+      --muted: rgba(232,224,204,0.5);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Mono', monospace;
+      background: var(--navy);
+      color: var(--text);
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* CURSOR */
+    .cursor { position: fixed; width: 10px; height: 10px; background: var(--gold); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); transition: transform 0.1s; }
+    .cursor-ring { position: fixed; width: 36px; height: 36px; border: 1px solid rgba(201,168,76,0.5); border-radius: 50%; pointer-events: none; z-index: 9998; transform: translate(-50%,-50%); transition: all 0.15s ease; }
+    body:hover .cursor-ring { opacity: 1; }
+
+    /* BACKGROUND */
+    .bg-canvas {
+      position: fixed; inset: 0; z-index: 0; overflow: hidden;
+      background: radial-gradient(ellipse 80% 60% at 20% 20%, rgba(12,30,68,0.9) 0%, transparent 60%),
+                  radial-gradient(ellipse 60% 50% at 80% 80%, rgba(9,23,51,0.8) 0%, transparent 60%),
+                  var(--navy);
+    }
+    .bg-canvas::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image: radial-gradient(rgba(201,168,76,0.07) 1px, transparent 1px);
+      background-size: 44px 44px;
+      mask-image: radial-gradient(ellipse at center, black 20%, transparent 80%);
+    }
+    .orb {
+      position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.15; animation: drift 18s ease-in-out infinite alternate;
+    }
+    .orb1 { width: 500px; height: 500px; background: radial-gradient(circle, #1a3a7a, transparent); top: -100px; left: -100px; }
+    .orb2 { width: 400px; height: 400px; background: radial-gradient(circle, #c9a84c, transparent); bottom: -100px; right: -50px; animation-delay: -9s; opacity: 0.08; }
+    .orb3 { width: 300px; height: 300px; background: radial-gradient(circle, #0d2557, transparent); top: 40%; left: 50%; animation-delay: -4s; }
+
+    @keyframes drift { from { transform: translate(0,0) scale(1); } to { transform: translate(40px, 30px) scale(1.1); } }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 1.2rem 4rem;
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(4,13,31,0.6);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(201,168,76,0.08);
+      transition: all 0.4s;
+    }
+    nav.scrolled { padding: 0.8rem 4rem; background: rgba(4,13,31,0.85); }
+    .nav-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem; font-weight: 600; letter-spacing: 0.05em;
+      color: var(--gold2);
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--gold3); }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a {
+      color: var(--muted); text-decoration: none; font-size: 0.72rem;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      transition: color 0.3s; position: relative;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; bottom: -4px; left: 0;
+      width: 0; height: 1px; background: var(--gold);
+      transition: width 0.3s ease;
+    }
+    .nav-links a:hover { color: var(--gold2); }
+    .nav-links a:hover::after { width: 100%; }
+
+    /* MAIN WRAPPER */
+    main { position: relative; z-index: 1; }
+
+    /* SECTIONS */
+    section { padding: 6rem 4rem; max-width: 1200px; margin: 0 auto; }
+
+    /* HERO */
+    #hero {
+      min-height: 100vh; display: flex; flex-direction: column;
+      justify-content: center; padding-top: 100px; max-width: 100%; padding-left: 8rem; padding-right: 8rem;
+    }
+    .hero-eyebrow {
+      font-size: 0.7rem; letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 1.5rem;
+      display: flex; align-items: center; gap: 1rem; opacity: 0;
+      animation: fadeUp 0.8s 0.2s forwards;
+    }
+    .hero-eyebrow::before { content: ''; width: 40px; height: 1px; background: var(--gold); }
+    .hero-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(5rem, 10vw, 10rem);
+      font-weight: 300; line-height: 0.9; letter-spacing: -0.02em;
+      color: var(--text);
+      opacity: 0; animation: fadeUp 0.9s 0.4s forwards;
+    }
+    .hero-name em { font-style: italic; color: var(--gold2); }
+    .hero-title {
+      font-size: 0.85rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--muted); margin-top: 1.5rem;
+      opacity: 0; animation: fadeUp 0.9s 0.6s forwards;
+    }
+    .hero-tagline {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.3rem; font-style: italic;
+      color: rgba(201,168,76,0.7); margin-top: 2rem; max-width: 500px;
+      opacity: 0; animation: fadeUp 0.9s 0.8s forwards;
+    }
+    .hero-cta {
+      display: flex; gap: 1.2rem; margin-top: 3rem;
+      opacity: 0; animation: fadeUp 0.9s 1s forwards;
+    }
+    .btn-primary {
+      padding: 0.85rem 2.2rem; border: 1px solid var(--gold);
+      background: linear-gradient(135deg, rgba(201,168,76,0.15), rgba(201,168,76,0.05));
+      color: var(--gold2); font-family: 'DM Mono', monospace;
+      font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase;
+      text-decoration: none; cursor: none;
+      transition: all 0.4s; position: relative; overflow: hidden;
+      backdrop-filter: blur(8px);
+    }
+    .btn-primary::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(201,168,76,0.3), rgba(201,168,76,0.1));
+      opacity: 0; transition: opacity 0.4s;
+    }
+    .btn-primary:hover::before { opacity: 1; }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(201,168,76,0.2); }
+    .btn-secondary {
+      padding: 0.85rem 2.2rem; border: 1px solid rgba(255,255,255,0.1);
+      background: transparent; color: var(--muted);
+      font-family: 'DM Mono', monospace; font-size: 0.72rem;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      text-decoration: none; cursor: none; transition: all 0.4s;
+    }
+    .btn-secondary:hover { color: var(--text); border-color: rgba(255,255,255,0.25); transform: translateY(-2px); }
+
+    /* SCROLL INDICATOR */
+    .scroll-indicator {
+      position: absolute; bottom: 3rem; left: 8rem;
+      display: flex; align-items: center; gap: 1rem;
+      font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--muted); opacity: 0; animation: fadeUp 1s 1.4s forwards;
+    }
+    .scroll-line { width: 40px; height: 1px; background: var(--muted); animation: scrollPulse 2s ease-in-out infinite; }
+    @keyframes scrollPulse { 0%,100% { width: 40px; opacity: 0.5; } 50% { width: 20px; opacity: 1; } }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* SECTION HEADER */
+    .section-header { margin-bottom: 4rem; }
+    .section-label {
+      font-size: 0.65rem; letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--gold); display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;
+    }
+    .section-label::before { content: ''; width: 30px; height: 1px; background: var(--gold); }
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 300; line-height: 1;
+    }
+    .section-title em { font-style: italic; color: var(--gold2); }
+
+    /* GLASS CARD */
+    .glass {
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(20px);
+      border-radius: 2px;
+      transition: all 0.4s ease;
+    }
+    .glass:hover {
+      background: var(--glass-hover);
+      border-color: rgba(201,168,76,0.35);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(201,168,76,0.1) inset;
+    }
+
+    /* ABOUT */
+    #about .about-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start;
+    }
+    .about-text p {
+      color: var(--muted); line-height: 1.9; font-size: 0.85rem; margin-bottom: 1.2rem;
+    }
+    .about-text p strong { color: var(--gold2); font-weight: 500; }
+    .about-focus { margin-top: 2rem; }
+    .focus-item {
+      display: flex; align-items: flex-start; gap: 1rem;
+      padding: 1rem 1.2rem; margin-bottom: 0.6rem;
+      border-left: 2px solid rgba(201,168,76,0.2);
+      transition: border-color 0.3s;
+    }
+    .focus-item:hover { border-left-color: var(--gold); }
+    .focus-dot { width: 6px; height: 6px; background: var(--gold); border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+    .focus-item p { font-size: 0.8rem; color: var(--muted); line-height: 1.6; }
+    .about-stats {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem;
+    }
+    .stat-card {
+      padding: 2rem 1.5rem; text-align: center;
+    }
+    .stat-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 3rem; font-weight: 300; color: var(--gold2); line-height: 1;
+    }
+    .stat-label { font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-top: 0.5rem; }
+    .quote-card {
+      grid-column: 1 / -1; padding: 2rem 2.5rem; text-align: center;
+      border: 1px solid rgba(201,168,76,0.15);
+    }
+    .quote-card blockquote {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem; font-style: italic; color: var(--gold3);
+      line-height: 1.5;
+    }
+
+    /* SKILLS */
+    #skills .skills-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+    .skill-category { padding: 2rem; }
+    .skill-cat-title {
+      font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 1.5rem;
+      padding-bottom: 0.8rem; border-bottom: 1px solid rgba(201,168,76,0.15);
+    }
+    .skill-tags { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+    .skill-tag {
+      padding: 0.4rem 0.9rem; font-size: 0.7rem; letter-spacing: 0.05em;
+      border: 1px solid rgba(201,168,76,0.2); color: var(--muted);
+      transition: all 0.3s;
+    }
+    .skill-tag:hover {
+      border-color: var(--gold); color: var(--gold2);
+      background: rgba(201,168,76,0.08); transform: translateY(-2px);
+    }
+
+    /* EXPERIENCE */
+    #experience .timeline { position: relative; padding-left: 2rem; }
+    #experience .timeline::before {
+      content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+      width: 1px; background: linear-gradient(to bottom, transparent, rgba(201,168,76,0.4), transparent);
+    }
+    .timeline-item { position: relative; padding: 2rem 2rem 2rem 2.5rem; margin-bottom: 1.5rem; }
+    .timeline-item::before {
+      content: ''; position: absolute; left: -2.55rem; top: 2.3rem;
+      width: 10px; height: 10px; border-radius: 50%;
+      border: 2px solid var(--gold); background: var(--navy);
+      transition: all 0.3s;
+    }
+    .timeline-item:hover::before { background: var(--gold); box-shadow: 0 0 15px rgba(201,168,76,0.5); }
+    .timeline-period { font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); }
+    .timeline-role {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem; font-weight: 400; margin: 0.3rem 0; color: var(--text);
+    }
+    .timeline-company { font-size: 0.75rem; color: var(--muted); letter-spacing: 0.05em; margin-bottom: 1rem; }
+    .timeline-desc { font-size: 0.8rem; color: var(--muted); line-height: 1.8; }
+
+    /* PROJECTS */
+    #projects .projects-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+    .project-card { padding: 2rem; position: relative; overflow: hidden; cursor: none; }
+    .project-card::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(201,168,76,0.05) 0%, transparent 60%);
+      opacity: 0; transition: opacity 0.4s;
+    }
+    .project-card:hover::before { opacity: 1; }
+    .project-number {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 3.5rem; font-weight: 300; color: rgba(201,168,76,0.1);
+      line-height: 1; margin-bottom: 1rem;
+      transition: color 0.3s;
+    }
+    .project-card:hover .project-number { color: rgba(201,168,76,0.2); }
+    .project-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem; font-weight: 400; color: var(--text); margin-bottom: 0.8rem;
+    }
+    .project-desc { font-size: 0.78rem; color: var(--muted); line-height: 1.8; margin-bottom: 1.5rem; }
+    .project-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem; }
+    .project-tag {
+      font-size: 0.62rem; padding: 0.2rem 0.6rem;
+      border: 1px solid rgba(201,168,76,0.15); color: var(--gold);
+      letter-spacing: 0.08em;
+    }
+    .project-link {
+      font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--gold); text-decoration: none;
+      display: flex; align-items: center; gap: 0.5rem;
+      transition: gap 0.3s;
+    }
+    .project-link:hover { gap: 1rem; }
+
+    /* BLOG */
+    #blog .blog-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+    .blog-card { padding: 2rem; cursor: none; }
+    .blog-date { font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.8rem; }
+    .blog-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem; font-weight: 400; color: var(--text);
+      line-height: 1.3; margin-bottom: 0.8rem; transition: color 0.3s;
+    }
+    .blog-card:hover .blog-title { color: var(--gold2); }
+    .blog-excerpt { font-size: 0.78rem; color: var(--muted); line-height: 1.8; margin-bottom: 1.2rem; }
+    .blog-read { font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); display: flex; align-items: center; gap: 0.5rem; transition: gap 0.3s; }
+    .blog-card:hover .blog-read { gap: 0.9rem; }
+
+    /* CONTACT */
+    #contact { max-width: 100%; padding-left: 8rem; padding-right: 8rem; }
+    .contact-inner {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; align-items: start;
+    }
+    .contact-left h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(3rem, 6vw, 5rem); font-weight: 300; line-height: 1;
+    }
+    .contact-left h2 em { font-style: italic; color: var(--gold2); }
+    .contact-left p { color: var(--muted); font-size: 0.82rem; line-height: 1.8; margin-top: 1.5rem; }
+    .contact-links { margin-top: 3rem; display: flex; flex-direction: column; gap: 1rem; }
+    .contact-link {
+      display: flex; align-items: center; gap: 1.2rem; padding: 1rem 1.5rem;
+      border: 1px solid rgba(201,168,76,0.12);
+      color: var(--muted); text-decoration: none; font-size: 0.78rem;
+      letter-spacing: 0.05em; transition: all 0.3s;
+    }
+    .contact-link:hover { border-color: var(--gold); color: var(--gold2); background: rgba(201,168,76,0.06); transform: translateX(6px); }
+    .contact-icon { font-size: 1rem; width: 20px; text-align: center; }
+    .contact-form { display: flex; flex-direction: column; gap: 1.2rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.5rem; }
+    .form-group label { font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); }
+    .form-group input, .form-group textarea {
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(201,168,76,0.15);
+      padding: 0.9rem 1.2rem; color: var(--text); font-family: 'DM Mono', monospace;
+      font-size: 0.8rem; outline: none; transition: all 0.3s; resize: none;
+    }
+    .form-group input:focus, .form-group textarea:focus {
+      border-color: rgba(201,168,76,0.5); background: rgba(201,168,76,0.04);
+    }
+    .form-group textarea { height: 120px; }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid rgba(201,168,76,0.08);
+      padding: 3rem 8rem;
+      display: flex; align-items: center; justify-content: space-between;
+      position: relative; z-index: 1;
+    }
+    .footer-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem; color: var(--gold2);
+    }
+    .footer-copy { font-size: 0.65rem; letter-spacing: 0.1em; color: var(--muted); }
+    .footer-socials { display: flex; gap: 1.5rem; }
+    .footer-socials a { font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color 0.3s; }
+    .footer-socials a:hover { color: var(--gold); }
+
+    /* SCROLL REVEAL */
+    .reveal { opacity: 0; transform: translateY(40px); transition: all 0.9s cubic-bezier(0.22,1,0.36,1); }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* SCROLLBAR */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--navy); }
+    ::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.3); border-radius: 2px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      nav { padding: 1rem 2rem; }
+      nav.scrolled { padding: 0.8rem 2rem; }
+      .nav-links { display: none; }
+      #hero, #contact { padding-left: 2rem; padding-right: 2rem; }
+      section { padding: 5rem 2rem; }
+      .about-grid, .contact-inner { grid-template-columns: 1fr; gap: 3rem; }
+      .skills-grid { grid-template-columns: 1fr 1fr; }
+      .projects-grid { grid-template-columns: 1fr; }
+      .blog-grid { grid-template-columns: 1fr; }
+      footer { padding: 2rem; flex-direction: column; gap: 1rem; text-align: center; }
+      .hero-name { font-size: 4rem; }
+      .scroll-indicator { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Custom Cursor -->
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- Background -->
+  <div class="bg-canvas">
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+    <div class="orb orb3"></div>
+  </div>
+
+  <!-- Nav -->
+  <nav id="navbar">
+    <a href="#hero" class="nav-logo">M<span>.</span></a>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#experience">Experience</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#blog">Blog</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <!-- HERO -->
+    <section id="hero">
+      <div class="hero-eyebrow">Based in Indore, India</div>
+      <h1 class="hero-name">Mu<em>kul</em></h1>
+      <p class="hero-title">DevOps Engineer &nbsp;·&nbsp; Infrastructure Architect &nbsp;·&nbsp; Automation Craftsman</p>
+      <p class="hero-tagline">"Automate the predictable. Engineer the resilient."</p>
+      <div class="hero-cta">
+        <a href="#projects" class="btn-primary">View My Work</a>
+        <a href="#contact" class="btn-secondary">Get In Touch</a>
+      </div>
+      <div class="scroll-indicator">
+        <div class="scroll-line"></div>
+        Scroll
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about">
+      <div class="section-header reveal">
+        <div class="section-label">01 — About</div>
+        <h2 class="section-title">Strong systems are built on <em>strong basics</em></h2>
+      </div>
+      <div class="about-grid">
+        <div class="about-text reveal">
+          <p>I'm a <strong>DevOps enthusiast</strong> on a mission to master the foundations that power modern infrastructure — from the kernel level to the cloud. I believe that <strong>deep fundamentals</strong> are what separates engineers who build things that merely work from those who build things that <strong>last</strong>.</p>
+          <p>Currently sharpening my craft through hands-on Linux internals, building CI/CD pipelines from scratch, and exploring cloud-native patterns. Every system I touch gets more observable, more automated, and more resilient.</p>
+          <div class="about-focus">
+            <div class="focus-item">
+              <div class="focus-dot"></div>
+              <p>Deep Linux internals & shell scripting mastery</p>
+            </div>
+            <div class="focus-item">
+              <div class="focus-dot"></div>
+              <p>Building hands-on CI/CD pipelines and automation workflows</p>
+            </div>
+            <div class="focus-item">
+              <div class="focus-dot"></div>
+              <p>Cloud-native infrastructure & Infrastructure as Code</p>
+            </div>
+            <div class="focus-item">
+              <div class="focus-dot"></div>
+              <p>Documenting the journey through structured challenges</p>
+            </div>
+          </div>
+        </div>
+        <div class="about-stats reveal">
+          <div class="stat-card glass">
+            <div class="stat-num">5+</div>
+            <div class="stat-label">Tech Stacks</div>
+          </div>
+          <div class="stat-card glass">
+            <div class="stat-num">∞</div>
+            <div class="stat-label">Curiosity Level</div>
+          </div>
+          <div class="stat-card glass">
+            <div class="stat-num">100%</div>
+            <div class="stat-label">Open Source Heart</div>
+          </div>
+          <div class="stat-card glass">
+            <div class="stat-num">24/7</div>
+            <div class="stat-label">Systems Thinking</div>
+          </div>
+          <div class="quote-card glass">
+            <blockquote>"Design reliable, reproducible, production-ready systems."</blockquote>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SKILLS -->
+    <section id="skills">
+      <div class="section-header reveal">
+        <div class="section-label">02 — Skills</div>
+        <h2 class="section-title">Tools of the <em>craft</em></h2>
+      </div>
+      <div class="skills-grid">
+        <div class="skill-category glass reveal">
+          <div class="skill-cat-title">Core Systems</div>
+          <div class="skill-tags">
+            <span class="skill-tag">Linux</span>
+            <span class="skill-tag">Bash</span>
+            <span class="skill-tag">Git</span>
+            <span class="skill-tag">Shell Scripting</span>
+            <span class="skill-tag">Cron</span>
+            <span class="skill-tag">Systemd</span>
+          </div>
+        </div>
+        <div class="skill-category glass reveal">
+          <div class="skill-cat-title">Languages & Backend</div>
+          <div class="skill-tags">
+            <span class="skill-tag">JavaScript</span>
+            <span class="skill-tag">TypeScript</span>
+            <span class="skill-tag">Node.js</span>
+            <span class="skill-tag">Express</span>
+            <span class="skill-tag">Python</span>
+          </div>
+        </div>
+        <div class="skill-category glass reveal">
+          <div class="skill-cat-title">API Layer</div>
+          <div class="skill-tags">
+            <span class="skill-tag">GraphQL</span>
+            <span class="skill-tag">Apollo</span>
+            <span class="skill-tag">REST</span>
+            <span class="skill-tag">WebSockets</span>
+          </div>
+        </div>
+        <div class="skill-category glass reveal">
+          <div class="skill-cat-title">Cloud & DevOps</div>
+          <div class="skill-tags">
+            <span class="skill-tag">Docker</span>
+            <span class="skill-tag">AWS</span>
+            <span class="skill-tag">GitHub Actions</span>
+            <span class="skill-tag">CI/CD</span>
+            <span class="skill-tag">Terraform</span>
+          </div>
+        </div>
+        <div class="skill-category glass reveal">
+          <div class="skill-cat-title">Databases</div>
+          <div class="skill-tags">
+            <span class="skill-tag">MongoDB</span>
+            <span class="skill-tag">MySQL</span>
+            <span class="skill-tag">Redis</span>
+          </div>
+        </div>
+        <div class="skill-category glass reveal">
+          <div class="skill-cat-title">Currently Exploring</div>
+          <div class="skill-tags">
+            <span class="skill-tag">Kubernetes</span>
+            <span class="skill-tag">Ansible</span>
+            <span class="skill-tag">Prometheus</span>
+            <span class="skill-tag">Grafana</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXPERIENCE -->
+    <section id="experience">
+      <div class="section-header reveal">
+        <div class="section-label">03 — Experience</div>
+        <h2 class="section-title">The <em>journey</em> so far</h2>
+      </div>
+      <div class="timeline">
+        <div class="timeline-item glass reveal">
+          <div class="timeline-period">2024 — Present</div>
+          <div class="timeline-role">DevOps Engineer (Self-Directed)</div>
+          <div class="timeline-company">Independent Learning & Projects · Indore, India</div>
+          <div class="timeline-desc">Building production-grade DevOps skills through structured self-study and real projects. Mastering Linux internals, automating workflows end-to-end, and deploying containerized applications on cloud infrastructure.</div>
+        </div>
+        <div class="timeline-item glass reveal">
+          <div class="timeline-period">2023 — 2024</div>
+          <div class="timeline-role">Backend Developer</div>
+          <div class="timeline-company">Node.js & API Engineering · Indore, India</div>
+          <div class="timeline-desc">Designed and built RESTful and GraphQL APIs using Node.js and TypeScript. Worked with MongoDB and MySQL for data persistence. Focused on clean architecture and developer experience.</div>
+        </div>
+        <div class="timeline-item glass reveal">
+          <div class="timeline-period">2022 — 2023</div>
+          <div class="timeline-role">Systems Foundations</div>
+          <div class="timeline-company">Linux & Scripting · Deep Dive Phase</div>
+          <div class="timeline-desc">Went deep on Linux fundamentals — filesystems, processes, networking, and scripting. Wrote Bash automation scripts, set up local server environments, and began the path toward infrastructure engineering.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROJECTS -->
+    <section id="projects">
+      <div class="section-header reveal">
+        <div class="section-label">04 — Projects</div>
+        <h2 class="section-title">Things I've <em>built</em></h2>
+      </div>
+      <div class="projects-grid">
+        <div class="project-card glass reveal">
+          <div class="project-number">01</div>
+          <div class="project-title">CI/CD Pipeline Automation</div>
+          <div class="project-desc">A fully automated CI/CD pipeline using GitHub Actions, Docker, and AWS EC2. Push to main — code gets tested, containerized, and deployed. Zero manual steps.</div>
+          <div class="project-tags">
+            <span class="project-tag">GitHub Actions</span>
+            <span class="project-tag">Docker</span>
+            <span class="project-tag">AWS EC2</span>
+            <span class="project-tag">Bash</span>
+          </div>
+          <a href="https://github.com/Harsh-02W" class="project-link">View on GitHub →</a>
+        </div>
+        <div class="project-card glass reveal">
+          <div class="project-number">02</div>
+          <div class="project-title">Linux System Monitor</div>
+          <div class="project-desc">A Bash-driven system monitoring script that tracks CPU, memory, disk, and process health. Sends alerts and generates structured logs for observability.</div>
+          <div class="project-tags">
+            <span class="project-tag">Bash</span>
+            <span class="project-tag">Linux</span>
+            <span class="project-tag">Cron</span>
+            <span class="project-tag">Systemd</span>
+          </div>
+          <a href="https://github.com/Harsh-02W" class="project-link">View on GitHub →</a>
+        </div>
+        <div class="project-card glass reveal">
+          <div class="project-number">03</div>
+          <div class="project-title">GraphQL API Service</div>
+          <div class="project-desc">A production-ready GraphQL API built with Node.js, Apollo Server, and MongoDB. Includes authentication, data validation, and structured error handling.</div>
+          <div class="project-tags">
+            <span class="project-tag">Node.js</span>
+            <span class="project-tag">GraphQL</span>
+            <span class="project-tag">Apollo</span>
+            <span class="project-tag">MongoDB</span>
+          </div>
+          <a href="https://github.com/Harsh-02W" class="project-link">View on GitHub →</a>
+        </div>
+        <div class="project-card glass reveal">
+          <div class="project-number">04</div>
+          <div class="project-title">Infrastructure as Code Setup</div>
+          <div class="project-desc">Terraform configurations to provision reproducible cloud environments on AWS. Includes VPC, subnets, security groups, and EC2 instances — all version-controlled.</div>
+          <div class="project-tags">
+            <span class="project-tag">Terraform</span>
+            <span class="project-tag">AWS</span>
+            <span class="project-tag">IaC</span>
+          </div>
+          <a href="https://github.com/Harsh-02W" class="project-link">View on GitHub →</a>
+        </div>
+        <div class="project-card glass reveal">
+          <div class="project-number">05</div>
+          <div class="project-title">Dockerized Dev Environment</div>
+          <div class="project-desc">A multi-container Docker Compose setup for local development — Node.js app, MongoDB, Redis, and Nginx reverse proxy — all orchestrated with a single command.</div>
+          <div class="project-tags">
+            <span class="project-tag">Docker</span>
+            <span class="project-tag">Docker Compose</span>
+            <span class="project-tag">Nginx</span>
+            <span class="project-tag">Redis</span>
+          </div>
+          <a href="https://github.com/Harsh-02W" class="project-link">View on GitHub →</a>
+        </div>
+        <div class="project-card glass reveal">
+          <div class="project-number">06</div>
+          <div class="project-title">DevOps Journey Docs</div>
+          <div class="project-desc">A structured documentation repository chronicling deep-dive challenges, solutions, and learnings across Linux, CI/CD, containers, and cloud — built in public.</div>
+          <div class="project-tags">
+            <span class="project-tag">Markdown</span>
+            <span class="project-tag">Git</span>
+            <span class="project-tag">Open Source</span>
+          </div>
+          <a href="https://github.com/Harsh-02W" class="project-link">View on GitHub →</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- BLOG -->
+    <section id="blog">
+      <div class="section-header reveal">
+        <div class="section-label">05 — Blog</div>
+        <h2 class="section-title">Thoughts on <em>systems</em></h2>
+      </div>
+      <div class="blog-grid">
+        <div class="blog-card glass reveal">
+          <div class="blog-date">Systems — Jan 2025</div>
+          <div class="blog-title">Why Every DevOps Engineer Should Know Linux Internals</div>
+          <div class="blog-excerpt">Understanding what happens below the abstraction layer — from how the kernel schedules processes to how the filesystem manages inodes — changes the way you debug, optimize, and architect systems.</div>
+          <div class="blog-read">Read More →</div>
+        </div>
+        <div class="blog-card glass reveal">
+          <div class="blog-date">CI/CD — Feb 2025</div>
+          <div class="blog-title">Building a Zero-Downtime Deploy Pipeline from Scratch</div>
+          <div class="blog-excerpt">A step-by-step walkthrough of how I built a GitHub Actions pipeline that tests, containerizes, and deploys a Node.js app to AWS EC2 without a single second of downtime.</div>
+          <div class="blog-read">Read More →</div>
+        </div>
+        <div class="blog-card glass reveal">
+          <div class="blog-date">Containers — Mar 2025</div>
+          <div class="blog-title">Docker Isn't Magic — Here's What Actually Happens</div>
+          <div class="blog-excerpt">Demystifying containers by understanding namespaces, cgroups, and the union filesystem. Once you see how Docker works under the hood, you'll never treat it as a black box again.</div>
+          <div class="blog-read">Read More →</div>
+        </div>
+        <div class="blog-card glass reveal">
+          <div class="blog-date">Cloud — Apr 2025</div>
+          <div class="blog-title">Terraform: Writing Infrastructure Like You Write Code</div>
+          <div class="blog-excerpt">My journey from manually clicking through the AWS console to having fully reproducible, version-controlled infrastructure — and why IaC is the single biggest productivity unlock in DevOps.</div>
+          <div class="blog-read">Read More →</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact">
+      <div class="contact-inner">
+        <div class="contact-left reveal">
+          <div class="section-label">06 — Contact</div>
+          <h2>Let's build something <em>resilient</em></h2>
+          <p>Whether you have a project in mind, want to collaborate, or just want to talk DevOps and systems — I'm always up for a good conversation.</p>
+          <div class="contact-links">
+            <a href="https://github.com/Harsh-02W" class="contact-link">
+              <span class="contact-icon">⌥</span> github.com/Harsh-02W
+            </a>
+            <a href="mailto:mukul@example.com" class="contact-link">
+              <span class="contact-icon">◎</span> mukul@example.com
+            </a>
+            <a href="#" class="contact-link">
+              <span class="contact-icon">◈</span> linkedin.com/in/mukul
+            </a>
+            <a href="#" class="contact-link">
+              <span class="contact-icon">◉</span> Indore, Madhya Pradesh, India
+            </a>
+          </div>
+        </div>
+        <div class="contact-form reveal">
+          <div class="form-group">
+            <label>Your Name</label>
+            <input type="text" placeholder="What should I call you?" />
+          </div>
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" placeholder="where_can_i_reply@you.com" />
+          </div>
+          <div class="form-group">
+            <label>Message</label>
+            <textarea placeholder="Tell me about your project, idea, or just say hello..."></textarea>
+          </div>
+          <button class="btn-primary" style="width:100%;cursor:none;border:none;font-family:'DM Mono',monospace;font-size:0.72rem;letter-spacing:0.15em;text-transform:uppercase;padding:1rem;background:linear-gradient(135deg,rgba(201,168,76,0.2),rgba(201,168,76,0.08));color:#e2c47a;border:1px solid #c9a84c;transition:all 0.4s;" onmouseover="this.style.background='linear-gradient(135deg,rgba(201,168,76,0.35),rgba(201,168,76,0.15))'" onmouseout="this.style.background='linear-gradient(135deg,rgba(201,168,76,0.2),rgba(201,168,76,0.08))'">Send Message</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-logo">Mukul.</div>
+    <div class="footer-copy">© 2025 Mukul · Built with precision</div>
+    <div class="footer-socials">
+      <a href="https://github.com/Harsh-02W">GitHub</a>
+      <a href="#">LinkedIn</a>
+    </div>
+  </footer>
+
+  <script>
+    // Cursor
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursorRing');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; cursor.style.left = mx+'px'; cursor.style.top = my+'px'; });
+    function animateRing() {
+      rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
+      ring.style.left = rx+'px'; ring.style.top = ry+'px';
+      requestAnimationFrame(animateRing);
+    }
+    animateRing();
+    document.querySelectorAll('a, button, .project-card, .blog-card, .skill-tag').forEach(el => {
+      el.addEventListener('mouseenter', () => { ring.style.width='60px'; ring.style.height='60px'; ring.style.borderColor='rgba(201,168,76,0.8)'; cursor.style.transform='translate(-50%,-50%) scale(0.5)'; });
+      el.addEventListener('mouseleave', () => { ring.style.width='36px'; ring.style.height='36px'; ring.style.borderColor='rgba(201,168,76,0.5)'; cursor.style.transform='translate(-50%,-50%) scale(1)'; });
+    });
+
+    // Navbar scroll
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => { navbar.classList.toggle('scrolled', window.scrollY > 60); });
+
+    // Reveal on scroll
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          const delay = (Array.from(entry.target.parentElement.children).indexOf(entry.target)) * 80;
+          setTimeout(() => entry.target.classList.add('visible'), delay);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+    reveals.forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>
