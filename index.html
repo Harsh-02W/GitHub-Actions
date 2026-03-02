@@ -100,9 +100,71 @@
 
     /* HERO */
     #hero {
-      min-height: 100vh; display: flex; flex-direction: column;
-      justify-content: center; padding-top: 100px; max-width: 100%; padding-left: 8rem; padding-right: 8rem;
+      min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr;
+      align-items: center; gap: 4rem;
+      padding-top: 100px; max-width: 100%; padding-left: 8rem; padding-right: 8rem;
     }
+    .hero-left { display: flex; flex-direction: column; }
+    .hero-right {
+      display: flex; align-items: center; justify-content: center;
+      position: relative; height: 520px;
+    }
+    /* Terminal Window */
+    .terminal-window {
+      width: 100%; max-width: 480px; height: 460px;
+      background: rgba(4,13,31,0.7);
+      border: 1px solid rgba(201,168,76,0.25);
+      border-radius: 10px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(201,168,76,0.08) inset, 0 0 60px rgba(201,168,76,0.04);
+      overflow: hidden;
+      position: relative;
+      animation: termFloat 6s ease-in-out infinite;
+    }
+    @keyframes termFloat {
+      0%,100% { transform: translateY(0px); }
+      50% { transform: translateY(-12px); }
+    }
+    .terminal-bar {
+      display: flex; align-items: center; gap: 0.5rem;
+      padding: 0.8rem 1rem;
+      background: rgba(255,255,255,0.03);
+      border-bottom: 1px solid rgba(201,168,76,0.12);
+    }
+    .t-dot { width: 11px; height: 11px; border-radius: 50%; }
+    .t-dot.red   { background: #ff5f57; }
+    .t-dot.yellow{ background: #ffbd2e; }
+    .t-dot.green { background: #28c840; }
+    .terminal-title {
+      font-size: 0.65rem; letter-spacing: 0.12em; color: rgba(201,168,76,0.5);
+      margin-left: auto; margin-right: auto; text-transform: uppercase;
+    }
+    .terminal-body {
+      padding: 1.2rem 1.4rem; height: calc(100% - 42px); overflow: hidden;
+      font-family: 'DM Mono', monospace; font-size: 0.72rem; line-height: 1.7;
+    }
+    .t-line { opacity: 0; transform: translateX(-6px); transition: opacity 0.4s, transform 0.4s; }
+    .t-line.show { opacity: 1; transform: translateX(0); }
+    .t-prompt { color: rgba(201,168,76,0.7); }
+    .t-cmd { color: #e8e0cc; }
+    .t-output { color: rgba(100,200,140,0.8); }
+    .t-output.warn { color: rgba(255,200,80,0.8); }
+    .t-output.info { color: rgba(100,180,255,0.8); }
+    .t-output.gold { color: rgba(201,168,76,0.9); }
+    .t-cursor-blink {
+      display: inline-block; width: 7px; height: 13px;
+      background: var(--gold); margin-left: 2px; vertical-align: middle;
+      animation: blink 1s step-end infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0;} }
+    /* Glow halo behind terminal */
+    .terminal-glow {
+      position: absolute; width: 300px; height: 300px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(201,168,76,0.08), transparent 70%);
+      top: 50%; left: 50%; transform: translate(-50%,-50%);
+      pointer-events: none; animation: glowPulse 4s ease-in-out infinite;
+    }
+    @keyframes glowPulse { 0%,100%{opacity:0.6;} 50%{opacity:1;} }
     .hero-eyebrow {
       font-size: 0.7rem; letter-spacing: 0.25em; text-transform: uppercase;
       color: var(--gold); margin-bottom: 1.5rem;
@@ -387,20 +449,124 @@
     ::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.3); border-radius: 2px; }
     ::-webkit-scrollbar-thumb:hover { background: var(--gold); }
 
-    /* RESPONSIVE */
-    @media (max-width: 900px) {
-      nav { padding: 1rem 2rem; }
-      nav.scrolled { padding: 0.8rem 2rem; }
+    /* ─── HAMBURGER MENU ─── */
+    .hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      background: none; border: none; cursor: pointer; padding: 4px; z-index: 200;
+    }
+    .hamburger span {
+      display: block; width: 24px; height: 1.5px;
+      background: var(--gold2); transition: all 0.35s ease;
+      transform-origin: center;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+    /* Mobile nav drawer */
+    .mobile-nav {
+      display: none; position: fixed; inset: 0; z-index: 150;
+      background: rgba(4,13,31,0.97); backdrop-filter: blur(20px);
+      flex-direction: column; align-items: center; justify-content: center; gap: 2.5rem;
+    }
+    .mobile-nav.open { display: flex; }
+    .mobile-nav a {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.2rem; font-weight: 300; color: var(--text);
+      text-decoration: none; letter-spacing: 0.05em;
+      transition: color 0.3s;
+    }
+    .mobile-nav a:hover { color: var(--gold2); }
+
+    /* ─── TABLET  (≤ 1024px) ─── */
+    @media (max-width: 1024px) {
+      nav  { padding: 1rem 2.5rem; }
+      nav.scrolled { padding: 0.8rem 2.5rem; }
+      #hero  { padding-left: 4rem; padding-right: 4rem; gap: 2.5rem; }
+      #contact { padding-left: 4rem; padding-right: 4rem; }
+      section { padding: 5rem 2.5rem; }
+      footer  { padding: 2.5rem 2.5rem; }
+      .projects-grid { grid-template-columns: repeat(2, 1fr); }
+      .terminal-window { max-width: 380px; height: 400px; }
+    }
+
+    /* ─── MOBILE  (≤ 768px) ─── */
+    @media (max-width: 768px) {
+      /* Nav */
+      nav { padding: 1rem 1.5rem; }
+      nav.scrolled { padding: 0.8rem 1.5rem; }
       .nav-links { display: none; }
-      #hero, #contact { padding-left: 2rem; padding-right: 2rem; }
-      section { padding: 5rem 2rem; }
-      .about-grid, .contact-inner { grid-template-columns: 1fr; gap: 3rem; }
-      .skills-grid { grid-template-columns: 1fr 1fr; }
-      .projects-grid { grid-template-columns: 1fr; }
-      .blog-grid { grid-template-columns: 1fr; }
-      footer { padding: 2rem; flex-direction: column; gap: 1rem; text-align: center; }
-      .hero-name { font-size: 4rem; }
+      .hamburger { display: flex; }
+
+      /* Hero – stack vertically */
+      #hero {
+        grid-template-columns: 1fr;
+        padding: 120px 1.5rem 4rem;
+        min-height: auto; gap: 3rem;
+      }
+      .hero-right {
+        height: 320px;
+        display: flex; /* show terminal on mobile too, just smaller */
+      }
+      .terminal-window { max-width: 100%; height: 300px; }
+      .terminal-body { font-size: 0.65rem; padding: 1rem; }
+      .hero-name { font-size: clamp(3.5rem, 12vw, 5rem); }
+      .hero-title { font-size: 0.72rem; }
+      .hero-tagline { font-size: 1.05rem; }
       .scroll-indicator { display: none; }
+
+      /* Sections */
+      section { padding: 4rem 1.5rem; }
+      #contact { padding-left: 1.5rem; padding-right: 1.5rem; }
+
+      /* About */
+      .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .about-stats { grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+      /* Skills */
+      .skills-grid { grid-template-columns: 1fr; gap: 1rem; }
+      .skill-category { padding: 1.4rem; }
+
+      /* Experience timeline */
+      #experience .timeline { padding-left: 1.5rem; }
+      .timeline-item { padding: 1.5rem 1rem 1.5rem 1.8rem; }
+      .timeline-item::before { left: -1.95rem; }
+      .timeline-role { font-size: 1.3rem; }
+
+      /* Projects */
+      .projects-grid { grid-template-columns: 1fr; gap: 1rem; }
+      .project-card { padding: 1.4rem; }
+
+      /* Blog */
+      .blog-grid { grid-template-columns: 1fr; gap: 1rem; }
+      .blog-card { padding: 1.4rem; }
+
+      /* Contact */
+      .contact-inner { grid-template-columns: 1fr; gap: 3rem; }
+      .contact-left h2 { font-size: 2.5rem; }
+
+      /* Footer */
+      footer { padding: 2rem 1.5rem; flex-direction: column; gap: 1rem; text-align: center; }
+      .footer-socials { justify-content: center; }
+
+      /* Section titles */
+      .section-title { font-size: 2.2rem; }
+    }
+
+    /* ─── SMALL MOBILE (≤ 420px) ─── */
+    @media (max-width: 420px) {
+      #hero { padding: 100px 1.2rem 3rem; }
+      .hero-name { font-size: 3rem; }
+      .hero-cta { flex-direction: column; gap: 0.8rem; }
+      .btn-primary, .btn-secondary { text-align: center; }
+      .hero-right { height: 260px; }
+      .terminal-window { height: 240px; }
+      .about-stats { grid-template-columns: 1fr 1fr; }
+      .stat-card { padding: 1.2rem 0.8rem; }
+      .stat-num { font-size: 2.2rem; }
+      section { padding: 3rem 1.2rem; }
+      #contact { padding-left: 1.2rem; padding-right: 1.2rem; }
+      footer { padding: 1.5rem 1.2rem; }
     }
   </style>
 </head>
@@ -417,6 +583,16 @@
     <div class="orb orb3"></div>
   </div>
 
+  <!-- Mobile nav drawer -->
+  <div class="mobile-nav" id="mobileNav">
+    <a href="#about"      onclick="closeMobileNav()">About</a>
+    <a href="#skills"     onclick="closeMobileNav()">Skills</a>
+    <a href="#experience" onclick="closeMobileNav()">Experience</a>
+    <a href="#projects"   onclick="closeMobileNav()">Projects</a>
+    <a href="#blog"       onclick="closeMobileNav()">Blog</a>
+    <a href="#contact"    onclick="closeMobileNav()">Contact</a>
+  </div>
+
   <!-- Nav -->
   <nav id="navbar">
     <a href="#hero" class="nav-logo">M<span>.</span></a>
@@ -428,19 +604,40 @@
       <li><a href="#blog">Blog</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
+    <button class="hamburger" id="hamburger" aria-label="Menu" onclick="toggleMobileNav()">
+      <span></span><span></span><span></span>
+    </button>
   </nav>
 
   <main>
     <!-- HERO -->
     <section id="hero">
-      <div class="hero-eyebrow">Based in Indore, India</div>
-      <h1 class="hero-name">Mu<em>kul</em></h1>
-      <p class="hero-title">DevOps Engineer &nbsp;·&nbsp; Infrastructure Architect &nbsp;·&nbsp; Automation Craftsman</p>
-      <p class="hero-tagline">"Automate the predictable. Engineer the resilient."</p>
-      <div class="hero-cta">
-        <a href="#projects" class="btn-primary">View My Work</a>
-        <a href="#contact" class="btn-secondary">Get In Touch</a>
+      <!-- Left: Text -->
+      <div class="hero-left">
+        <div class="hero-eyebrow">Based in Indore, India</div>
+        <h1 class="hero-name">Mu<em>kul</em></h1>
+        <p class="hero-title">DevOps Engineer &nbsp;·&nbsp; Infrastructure Architect &nbsp;·&nbsp; Automation Craftsman</p>
+        <p class="hero-tagline">"Automate the predictable. Engineer the resilient."</p>
+        <div class="hero-cta">
+          <a href="#projects" class="btn-primary">View My Work</a>
+          <a href="#contact" class="btn-secondary">Get In Touch</a>
+        </div>
       </div>
+
+      <!-- Right: Animated Terminal -->
+      <div class="hero-right">
+        <div class="terminal-glow"></div>
+        <div class="terminal-window">
+          <div class="terminal-bar">
+            <span class="t-dot red"></span>
+            <span class="t-dot yellow"></span>
+            <span class="t-dot green"></span>
+            <span class="terminal-title">mukul@devops ~ bash</span>
+          </div>
+          <div class="terminal-body" id="termBody"></div>
+        </div>
+      </div>
+
       <div class="scroll-indicator">
         <div class="scroll-line"></div>
         Scroll
@@ -720,8 +917,8 @@
             <a href="https://github.com/Harsh-02W" class="contact-link">
               <span class="contact-icon">⌥</span> github.com/Harsh-02W
             </a>
-            <a href="mailto:mukul@example.com" class="contact-link">
-              <span class="contact-icon">◎</span> mukul@example.com
+            <a href="/cdn-cgi/l/email-protection#ef829a849a83af8a978e829f838ac18c8082" class="contact-link">
+              <span class="contact-icon">◎</span> <span class="__cf_email__" data-cfemail="6c01190719002c09140d011c0009420f0301">[email&#160;protected]</span>
             </a>
             <a href="#" class="contact-link">
               <span class="contact-icon">◈</span> linkedin.com/in/mukul
@@ -759,7 +956,97 @@
     </div>
   </footer>
 
-  <script>
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    // Mobile nav
+    function toggleMobileNav() {
+      const nav = document.getElementById('mobileNav');
+      const btn = document.getElementById('hamburger');
+      nav.classList.toggle('open');
+      btn.classList.toggle('open');
+      document.body.style.overflow = nav.classList.contains('open') ? 'hidden' : '';
+    }
+    function closeMobileNav() {
+      document.getElementById('mobileNav').classList.remove('open');
+      document.getElementById('hamburger').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    // Terminal Animation
+    const termLines = [
+      { type: 'prompt', cmd: 'whoami' },
+      { type: 'output gold', text: '→ Mukul · DevOps Engineer' },
+      { type: 'blank' },
+      { type: 'prompt', cmd: 'cat skills.txt' },
+      { type: 'output info', text: '  Linux · Docker · AWS · Terraform' },
+      { type: 'output info', text: '  GitHub Actions · Node.js · Python' },
+      { type: 'blank' },
+      { type: 'prompt', cmd: 'docker ps --format "{{.Names}}"' },
+      { type: 'output', text: '  ✔  nginx-proxy        UP 3 days' },
+      { type: 'output', text: '  ✔  api-service        UP 3 days' },
+      { type: 'output', text: '  ✔  mongodb            UP 3 days' },
+      { type: 'output', text: '  ✔  redis-cache        UP 3 days' },
+      { type: 'blank' },
+      { type: 'prompt', cmd: 'terraform apply --auto-approve' },
+      { type: 'output warn', text: '  Plan: 4 to add, 0 to change, 0 to destroy' },
+      { type: 'output', text: '  aws_vpc.main: Creating...' },
+      { type: 'output', text: '  aws_ec2.app: Creating...' },
+      { type: 'output gold', text: '  Apply complete! Resources: 4 added.' },
+      { type: 'blank' },
+      { type: 'prompt', cmd: 'uptime && echo "systems nominal"' },
+      { type: 'output', text: '  load avg: 0.12, 0.10, 0.09' },
+      { type: 'output gold', text: '  ✔  systems nominal' },
+      { type: 'blank' },
+    ];
+
+    const termBody = document.getElementById('termBody');
+    let lineIndex = 0;
+
+    function renderLine(line) {
+      const el = document.createElement('div');
+      el.classList.add('t-line');
+      if (line.type === 'blank') {
+        el.innerHTML = '&nbsp;';
+      } else if (line.type === 'prompt') {
+        el.innerHTML = `<span class="t-prompt">mukul@devops:~$ </span><span class="t-cmd">${line.cmd}</span>`;
+      } else {
+        line.type.split(' ').forEach(c => el.classList.add(c === 'output' ? 't-output' : c === 'warn' ? 't-output' : c === 'info' ? 't-output' : c === 'gold' ? 't-output' : 't-output'));
+        el.classList.add('t-output');
+        if (line.type.includes('warn')) el.classList.add('warn');
+        if (line.type.includes('info')) el.classList.add('info');
+        if (line.type.includes('gold')) el.classList.add('gold');
+        el.textContent = line.text;
+      }
+      termBody.appendChild(el);
+      requestAnimationFrame(() => { setTimeout(() => el.classList.add('show'), 30); });
+
+      // Keep scroll at bottom
+      termBody.scrollTop = termBody.scrollHeight;
+    }
+
+    function runTerminal() {
+      if (lineIndex < termLines.length) {
+        const line = termLines[lineIndex];
+        renderLine(line);
+        lineIndex++;
+        const delay = line.type === 'prompt' ? 700 : line.type === 'blank' ? 200 : 180;
+        setTimeout(runTerminal, delay);
+      } else {
+        // Add blinking cursor then restart after pause
+        const cursorEl = document.createElement('div');
+        cursorEl.classList.add('t-line', 'show');
+        cursorEl.innerHTML = `<span class="t-prompt">mukul@devops:~$ </span><span class="t-cursor-blink"></span>`;
+        termBody.appendChild(cursorEl);
+        termBody.scrollTop = termBody.scrollHeight;
+        setTimeout(() => {
+          termBody.innerHTML = '';
+          lineIndex = 0;
+          runTerminal();
+        }, 3500);
+      }
+    }
+
+    setTimeout(runTerminal, 1200);
+
     // Cursor
     const cursor = document.getElementById('cursor');
     const ring = document.getElementById('cursorRing');
@@ -786,12 +1073,4 @@
       entries.forEach((entry, i) => {
         if (entry.isIntersecting) {
           const delay = (Array.from(entry.target.parentElement.children).indexOf(entry.target)) * 80;
-          setTimeout(() => entry.target.classList.add('visible'), delay);
-          observer.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
-    reveals.forEach(el => observer.observe(el));
-  </script>
-</body>
-</html>
+          setTimeout(() => entry.targ
